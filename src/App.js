@@ -1,55 +1,45 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+import { Container ,Row ,Col ,Button ,Card } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function App() {
-  return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
-          </ul>
-        </nav>
+function App() {
+  const [attraction, setAttraction] = useState([]);
 
-        {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
-        <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/users">
-            <Users />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+  // Note: the empty deps array [] means
+  // this useEffect will run once
+  // similar to componentDidMount()
+  useEffect(() => {
+    fetch("https://www.melivecode.com/api/attractions")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          setAttraction(result);
+        },
+      )
+  }, [])
+
+  return(
+    <div>
+      <Container>
+      <Row>
+        {attraction.map(attraction => (
+          <Col xs={12} sm={6} key={attraction.id}>
+            <Card style={{ width: '100%' }}>
+              <Card.Img variant="top" src={attraction.coverimage} />
+              <Card.Body>
+                  <Card.Title>{attraction.name}</Card.Title>
+                  <Card.Text className='text-truncate'>
+                    {attraction.detail}
+                  </Card.Text>
+                  <Button variant="primary">See More</Button>
+              </Card.Body>
+            </Card>
+          </Col> 
+        ))}
+      </Row>
+      </Container>
+    </div>
   );
 }
 
-function Home() {
-  return <h2>Home</h2>;
-}
-
-function About() {
-  return <h2>About</h2>;
-}
-
-function Users() {
-  return <h2>Users</h2>;
-}
+export default App;
